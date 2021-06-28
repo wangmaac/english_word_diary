@@ -31,6 +31,12 @@ dependencies:
   get: ^4.1.4
   flutter_svg: ^0.22.0
 
+  firebase_core: ^1.3.0
+  firebase_auth: ^1.4.1
+  google_sign_in: ^5.0.4
+  cloud_firestore: ^2.2.2
+  salomon_bottom_bar: ^3.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -50,6 +56,8 @@ flutter:
   assets:
     - assets/images/googlelogo.svg
     - assets/images/kakaologo.png
+    - assets/images/picdic.png
+    - assets/images/plogo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

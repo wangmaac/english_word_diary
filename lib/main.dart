@@ -1,47 +1,62 @@
+import 'package:englishbookworddiary/controller/controller.dart';
+import 'package:englishbookworddiary/pages/loginchecker.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
-import 'package:englishbookworddiary/widgets/loginbutton.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-void main() => runApp(GetMaterialApp(
-      home: MyApp(),
-      debugShowCheckedModeBanner: false,
-    ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom, SystemUiOverlay.top]);
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  runApp(GetMaterialApp(
+    initialBinding: BindingsBuilder(() {
+      Get.put(() => GetController()); //이 부분을 추가하면 된다.
+    }),
+    home: FutureSplash(),
+    debugShowCheckedModeBanner: false,
+  ));
+}
+
+class FutureSplash extends StatefulWidget {
+  const FutureSplash({Key? key}) : super(key: key);
+
+  @override
+  _FutureSplashState createState() => _FutureSplashState();
+}
+
+class _FutureSplashState extends State<FutureSplash> {
+  @override
+  void initState() {
+    initializeFlutterFire();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    return Scaffold(
-        body: SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(),
-          Container(
-            padding: const EdgeInsets.all(80),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.blueGrey,
-            ),
-            child: Center(
-                child: Text(
-              ' App Logo',
-              style: kMainTextBasic.copyWith(fontSize: 30, fontWeight: FontWeight.w700),
-            )),
-          ),
-          SizedBox(
-            height: 135,
-          ),
-          loginButton('Google 로그인', MediaQuery.of(context).size.width * 0.8, Colors.white,
-              Colors.grey[600]),
-          loginButton(
-              '카카오 로그인', MediaQuery.of(context).size.width * 0.8, Colors.yellow, Colors.black),
-        ],
-      ),
-    ));
+    return FutureBuilder(
+        future: Future.delayed(Duration(milliseconds: 2000)),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              backgroundColor: myBackgroundColor,
+              body: Center(
+                  child: Image.asset(
+                'assets/images/picdic.png',
+                fit: BoxFit.contain,
+              )),
+            );
+          } else {
+            return LoginChecker();
+          }
+        });
+  }
+
+  void initializeFlutterFire() async {
+    try {
+      await Firebase.initializeApp();
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }

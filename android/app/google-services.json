@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "29292526403",
+    "project_id": "englishworddiary",
+    "storage_bucket": "englishworddiary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29292526403:android:f6b7d5aeb27a5528d50df6",
+        "android_client_info": {
+          "package_name": "anative.geoje.englishbookworddiary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "29292526403-ur4sk8jpih039dmgjf5gph32lmln43cd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "anative.geoje.englishbookworddiary",
+            "certificate_hash": "bbdf6449764dd81f3fe2b2c6bec9c881305beaa2"
+          }
+        },
+        {
+          "client_id": "29292526403-5gkv9cmcb01tkmdpu6na3gs7dkllfleg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI6YLKFkBdtUCYMuXWWski1-lMLzlqfpA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "29292526403-5gkv9cmcb01tkmdpu6na3gs7dkllfleg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
