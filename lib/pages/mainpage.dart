@@ -1,6 +1,9 @@
 import 'package:englishbookworddiary/controller/controller.dart';
 import 'package:englishbookworddiary/models/user.dart';
+import 'package:englishbookworddiary/pages/firstpage.dart';
+import 'package:englishbookworddiary/pages/searchpage.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
+import 'package:englishbookworddiary/widgets/circleimage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -21,87 +24,31 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     Get.put(GetController());
     GetController.to.setGoogleUser(widget.loginInfo);
+
     List<Widget> pages = [
-      Center(child: Text('memu1')),
-      Center(child: Text('memu2')),
+      FirstPage(),
+      SearchPage(),
       Center(child: Text('memu3')),
       Center(child: Text('memu4')),
     ];
     return Scaffold(
-      appBar: PreferredSize(
-          //preferredSize: Size.fromHeight(kToolbarHeight),
-          preferredSize: Size.fromHeight(130),
-          child: SafeArea(
-            child: Stack(children: [
-              //background
-              Container(
-                color: Colors.yellow,
-                height: 130,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-                  color: Colors.blueGrey,
-                ),
-                height: 130,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 50,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Image.network(
-                            GetController.to.googleUser!.imageURL.toString(),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${GetController.to.googleUser!.email.toString()}',
-                            style: kMainTextBasic.copyWith(fontSize: 15),
-                          ),
-                          Text(
-                            '${GetController.to.googleUser!.userName.toString()}',
-                            style: kMainTextBasic.copyWith(fontSize: 15),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ]),
-          )
-          // AppBar(
-          //   elevation: 0.0,
-          //   backgroundColor: myBackgroundColor,
-          //   title: Text(
-          //     'title',
-          //     style: kMainTextBasic.copyWith(color: Colors.grey),
-          //   ),
-          // ),
-          ),
+      resizeToAvoidBottomInset: false,
+      appBar: myLoginInfoAppbar(),
       body: pages[_currentIndex],
       bottomNavigationBar: SalomonBottomBar(
         items: [
           SalomonBottomBarItem(
-              icon: Icon(Icons.home), title: Text('menu1'), selectedColor: Colors.blueGrey),
+              icon: Icon(Icons.home), title: Text('Home'), selectedColor: Colors.blueGrey),
           SalomonBottomBarItem(
-              icon: Icon(Icons.home), title: Text('menu2'), selectedColor: Colors.blueGrey),
+              icon: Icon(Icons.search), title: Text('Search'), selectedColor: Colors.indigo),
           SalomonBottomBarItem(
-              icon: Icon(Icons.home), title: Text('menu3'), selectedColor: Colors.blueGrey),
+              icon: Icon(Icons.local_library_outlined),
+              title: Text('MyBook'),
+              selectedColor: Colors.pink),
           SalomonBottomBarItem(
-              icon: Icon(Icons.home), title: Text('menu4'), selectedColor: Colors.blueGrey),
+              icon: Icon(Icons.wb_incandescent_outlined),
+              title: Text('Profile'),
+              selectedColor: Colors.blue),
         ],
         currentIndex: _currentIndex,
         onTap: (page) {
@@ -111,5 +58,51 @@ class _MainPageState extends State<MainPage> {
         },
       ),
     );
+  }
+
+  PreferredSizeWidget myLoginInfoAppbar() {
+    return PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: SafeArea(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+//              color: Colors.blueGrey,
+            ),
+            height: 130,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    Icons.notifications_none,
+                    color: Colors.grey.shade400,
+                    size: 25,
+                  ),
+                  Spacer(),
+                  CircleImageWidget(GetController.to.googleUser!.imageURL.toString(), 35.0),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${GetController.to.googleUser!.email.toString()}',
+                        style: kMainTextPTSans.copyWith(fontSize: 12),
+                      ),
+                      Text(
+                        '${GetController.to.googleUser!.userName.toString()}',
+                        style: kMainTextYanolza.copyWith(fontSize: 15),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 }

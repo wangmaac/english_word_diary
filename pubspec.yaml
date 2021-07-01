@@ -58,6 +58,7 @@ flutter:
     - assets/images/kakaologo.png
     - assets/images/picdic.png
     - assets/images/plogo.png
+    - assets/images/book1.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -75,6 +76,11 @@ flutter:
       fonts:
         - asset: assets/fonts/yanolzar.ttf
         - asset: assets/fonts/yanolzab.ttf
+          weight: 700
+    - family: PTsans
+      fonts:
+        - asset: assets/fonts/PTSans-Regular.ttf
+        - asset: assets/fonts/PTSans-Bold.ttf
           weight: 700
 
   #    - family: Trajan Pro

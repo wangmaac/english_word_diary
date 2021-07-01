@@ -3,6 +3,7 @@ import 'package:englishbookworddiary/pages/loginchecker.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 void main() async {
@@ -34,8 +35,9 @@ class _FutureSplashState extends State<FutureSplash> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     return FutureBuilder(
-        future: Future.delayed(Duration(milliseconds: 2000)),
+        future: Future.delayed(Duration(milliseconds: 10)),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(

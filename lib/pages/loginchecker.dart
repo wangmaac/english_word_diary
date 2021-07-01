@@ -28,8 +28,8 @@ class _LoginCheckerState extends State<LoginChecker> {
 
   @override
   void dispose() {
-    FirebaseAuth.instance.signOut();
-    logoutUser();
+    // FirebaseAuth.instance.signOut();
+    // logoutUser();
     super.dispose();
   }
 
@@ -39,10 +39,8 @@ class _LoginCheckerState extends State<LoginChecker> {
       stream: _auth.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         if (!snapshot.hasData) {
-          print('!snapshot.hasData');
           return loginButtonScreen();
         } else {
-          print('snapshot.hasData');
           myUser = new MyUser(
               uid: snapshot.data!.uid,
               email: snapshot.data!.email.toString(),
