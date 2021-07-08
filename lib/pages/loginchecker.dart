@@ -1,5 +1,3 @@
-import 'package:englishbookworddiary/controller/controller.dart';
-import 'package:englishbookworddiary/models/user.dart';
 import 'package:englishbookworddiary/pages/mainpage.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,9 +15,8 @@ class LoginChecker extends StatefulWidget {
 }
 
 class _LoginCheckerState extends State<LoginChecker> {
-  final GoogleSignIn _googleSignIn = new GoogleSignIn();
   FirebaseAuth _auth = FirebaseAuth.instance;
-  MyUser? myUser;
+  bool logged = false;
 
   @override
   void initState() {
@@ -28,8 +25,6 @@ class _LoginCheckerState extends State<LoginChecker> {
 
   @override
   void dispose() {
-    // FirebaseAuth.instance.signOut();
-    // logoutUser();
     super.dispose();
   }
 
@@ -38,38 +33,33 @@ class _LoginCheckerState extends State<LoginChecker> {
     return StreamBuilder(
       stream: _auth.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-        if (!snapshot.hasData) {
-          return loginButtonScreen();
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasData) {
+          return MainPage();
+        } else if (snapshot.hasError) {
+          return Container(
+            child: Text('error'),
+          );
         } else {
-          myUser = new MyUser(
-              uid: snapshot.data!.uid,
-              email: snapshot.data!.email.toString(),
-              userName: snapshot.data!.displayName,
-              imageURL: snapshot.data!.photoURL);
-          return MainPage(myUser!);
+          return loginButtonScreen();
         }
       },
     );
   }
 
-  loginUser() {
-    signInWithGoogle().then((value) {
-      if (value != null) {
-        myUser = new MyUser(
-            uid: value.user!.uid,
-            email: value.user!.email.toString(),
-            userName: value.user!.displayName,
-            imageURL: value.user!.photoURL);
-        //GetController.to.setGoogleUser(createMyUser2(value.user));
-      } else {
+  loginUser() async {
+    print('loginUser');
+    await signInWithGoogle().then((value) {
+      print(value!.user!.displayName);
+      if (value == null) {
         throw Exception('login 정보가 없습니다.');
+      } else {
+        setState(() {
+          logged = true;
+        });
       }
     });
-  }
-
-  logoutUser() {
-    FirebaseAuth.instance.signOut();
-    _googleSignIn.signOut();
   }
 
   //Main page view
@@ -105,6 +95,7 @@ class _LoginCheckerState extends State<LoginChecker> {
   }
 
   Future<UserCredential?> signInWithGoogle() async {
+    GoogleSignIn _googleSignIn = new GoogleSignIn();
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
     if (googleUser != null) {
@@ -123,11 +114,6 @@ class _LoginCheckerState extends State<LoginChecker> {
 
   void initializeFlutterFire() async {
     await Firebase.initializeApp();
-  }
-
-  MyUser createMyUser2(dynamic user) {
-    return new MyUser(
-        uid: user.uid, email: user.email, userName: user.displayName, imageURL: user.photoURL);
   }
 
   Widget loginButton(String vendor, double _deviceWidth, Color? color, Color? textColor) {

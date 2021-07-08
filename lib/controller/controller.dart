@@ -1,13 +1,13 @@
-import 'package:englishbookworddiary/models/user.dart';
 import 'package:get/get.dart';
 
 class GetController extends GetxController {
   static GetController get to => Get.find();
 
-  MyUser? googleUser;
+  String searchBookTitle = '';
+  List<String> kakaoBookList = [];
 
-  setGoogleUser(MyUser user) {
-    this.googleUser = user;
+  insertKakaoBookList(List<String> list) {
+    this.kakaoBookList = list;
     update();
   }
 }

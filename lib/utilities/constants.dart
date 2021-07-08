@@ -5,4 +5,5 @@ TextStyle kMainTextYanolza = TextStyle(fontFamily: 'Yanolza', fontSize: 15);
 TextStyle kMainTextPTSans = TextStyle(fontFamily: 'PTSans', fontSize: 15);
 
 Color myBackgroundColor = Color.fromRGBO(221, 239, 234, 1);
+
 // 앱 색

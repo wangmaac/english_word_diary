@@ -1,6 +1,7 @@
 import 'package:englishbookworddiary/pages/bookviewpage.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:englishbookworddiary/widgets/circleimage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,7 +30,6 @@ class FirstPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Spacer(),
               titleWidget(),
               SizedBox(
                 height: 10,
@@ -145,6 +145,7 @@ class FirstPage extends StatelessWidget {
         children: List.generate(tmpList.length, (index) {
           return GestureDetector(
             onTap: () {
+              print('a');
               Get.to(() => BookViewPage());
             },
             child: Container(

@@ -37,7 +37,7 @@ class _FutureSplashState extends State<FutureSplash> {
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     return FutureBuilder(
-        future: Future.delayed(Duration(milliseconds: 10)),
+        future: Future.delayed(Duration(milliseconds: 2000)),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(

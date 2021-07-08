@@ -1,17 +1,14 @@
-import 'package:englishbookworddiary/controller/controller.dart';
-import 'package:englishbookworddiary/models/user.dart';
 import 'package:englishbookworddiary/pages/firstpage.dart';
+import 'package:englishbookworddiary/pages/mybookpage.dart';
+import 'package:englishbookworddiary/pages/profilepage.dart';
 import 'package:englishbookworddiary/pages/searchpage.dart';
-import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:englishbookworddiary/widgets/circleimage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class MainPage extends StatefulWidget {
-  final MyUser loginInfo;
-
-  const MainPage(this.loginInfo, {Key? key}) : super(key: key);
+  const MainPage({Key? key}) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -19,17 +16,17 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
+  late FirebaseAuth _auth;
 
   @override
   Widget build(BuildContext context) {
-    Get.put(GetController());
-    GetController.to.setGoogleUser(widget.loginInfo);
+    _auth = FirebaseAuth.instance;
 
     List<Widget> pages = [
       FirstPage(),
       SearchPage(),
-      Center(child: Text('memu3')),
-      Center(child: Text('memu4')),
+      MyBookPage(),
+      ProfilePage(),
     ];
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -81,24 +78,24 @@ class _MainPageState extends State<MainPage> {
                     size: 25,
                   ),
                   Spacer(),
-                  CircleImageWidget(GetController.to.googleUser!.imageURL.toString(), 35.0),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${GetController.to.googleUser!.email.toString()}',
-                        style: kMainTextPTSans.copyWith(fontSize: 12),
-                      ),
-                      Text(
-                        '${GetController.to.googleUser!.userName.toString()}',
-                        style: kMainTextYanolza.copyWith(fontSize: 15),
-                      ),
-                    ],
-                  )
+                  CircleImageWidget(_auth.currentUser!.photoURL.toString(), 30.0),
+                  // SizedBox(
+                  //   width: 15,
+                  // ),
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Text(
+                  //       '${_auth.currentUser!.email.toString()}',
+                  //       style: kMainTextPTSans.copyWith(fontSize: 12),
+                  //     ),
+                  //     Text(
+                  //       '${_auth.currentUser!.displayName.toString()}',
+                  //       style: kMainTextYanolza.copyWith(fontSize: 15),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),
