@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>29292526403-bt78r1mc1co948t6osksqgvljc3rdkri.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.29292526403-bt78r1mc1co948t6osksqgvljc3rdkri</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>29292526403-ur4sk8jpih039dmgjf5gph32lmln43cd.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBawq5VsK6ax3CyyDzXO7AiSws0qy5XnZo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>29292526403</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>anative.geoje.englishbookworddiary</string>
+	<key>PROJECT_ID</key>
+	<string>englishworddiary</string>
+	<key>STORAGE_BUCKET</key>
+	<string>englishworddiary.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:29292526403:ios:9c7a9dd2b014cd4ed50df6</string>
+</dict>
+</plist>

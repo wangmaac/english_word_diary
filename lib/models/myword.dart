@@ -8,10 +8,14 @@ class MyWord {
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        other is MyWord && runtimeType == other.runtimeType && meaning == other.meaning;
+        other is MyWord &&
+            runtimeType == other.runtimeType &&
+            meaning == other.meaning &&
+            title == other.title;
   }
 
   @override
-  // TODO: implement hashCode
-  int get hashCode => super.hashCode;
+  int get hashCode {
+    return meaning.hashCode ^ title.hashCode;
+  }
 }

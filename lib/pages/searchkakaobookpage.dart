@@ -58,7 +58,6 @@ class SearchKAKAOBookPage extends StatelessWidget {
                           ),
                         ),
                         onTap: () async {
-                          //Get.back(result: GetController.to.kakaoBookList[index]);
                           _fileFromImageURL(GetController.to.kakaoBookList[index])
                               .then((value) => Get.back(result: value));
                         },

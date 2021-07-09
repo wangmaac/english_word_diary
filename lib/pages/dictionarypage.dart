@@ -183,11 +183,22 @@ class _DictionaryPageState extends State<DictionaryPage> {
   }
 
   void rebuildWordList(String title, Definitions content) {
-    resultList.add(new MyWord(title, content.type, content.definition));
+    MyWord mw = new MyWord(title, content.type, content.definition);
+
+    if (resultList.length == 0) {
+      resultList.add(mw);
+    } else {
+      resultList = resultList.where((myWord) => myWord != mw).toList();
+      resultList.add(mw);
+    }
+    showSnackBar();
+  }
+
+  showSnackBar() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
-        '리스트에 추가했습니다.',
-        style: kMainTextYanolza,
+        'completed adding words.',
+        style: kMainTextPTSans,
       ),
       duration: Duration(milliseconds: 1000),
     ));
