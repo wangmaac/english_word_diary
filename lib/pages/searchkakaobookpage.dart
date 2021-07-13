@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:englishbookworddiary/controller/controller.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:englishbookworddiary/widgets/searchbarbooktitle.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +15,8 @@ class SearchKAKAOBookPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseAuth _auth = FirebaseAuth.instance;
+
     Get.put(GetController());
     return Scaffold(
       appBar: AppBar(
@@ -57,8 +60,10 @@ class SearchKAKAOBookPage extends StatelessWidget {
                             ),
                           ),
                         ),
+                        //),
                         onTap: () async {
-                          _fileFromImageURL(GetController.to.kakaoBookList[index])
+                          _fileFromImageURL(GetController.to.kakaoBookList[index],
+                                  _auth.currentUser!.uid.toString())
                               .then((value) => Get.back(result: value));
                         },
                       );
@@ -73,13 +78,13 @@ class SearchKAKAOBookPage extends StatelessWidget {
     );
   }
 
-  Future<File> _fileFromImageURL(String url) async {
+  Future<File> _fileFromImageURL(String url, String uid) async {
     DateFormat df = DateFormat('yyyyMMddHHmmss');
 
     var uri = Uri.parse(url);
     final response = await http.get(uri);
     final documentDirectory = await getApplicationDocumentsDirectory();
-    final file = File(join(documentDirectory.path, '${df.format(DateTime.now())}.jpg'));
+    final file = File(join(documentDirectory.path, '$uid${df.format(DateTime.now())}.jpg'));
     file.writeAsBytesSync(response.bodyBytes);
     return file;
   }

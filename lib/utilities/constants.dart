@@ -6,6 +6,6 @@ TextStyle kMainTextPTSans = TextStyle(fontFamily: 'PTSans', fontSize: 15);
 
 Color myBackgroundColor = Color.fromRGBO(221, 239, 234, 1);
 
-List<String> myDropdownTitle = ['PictureBook', 'Comic', 'Novel', 'Horror', 'Romance'];
+List<String> myDropdownTitle = ['PictureBook', 'Comic', 'Novel', 'Horror', 'Romance', 'Etc...'];
 
 // 앱 색

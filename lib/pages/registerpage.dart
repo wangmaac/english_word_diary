@@ -1,16 +1,18 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'package:englishbookworddiary/models/dictionary_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:englishbookworddiary/models/myword.dart';
 import 'package:englishbookworddiary/pages/dictionarypage.dart';
 import 'package:englishbookworddiary/pages/searchkakaobookpage.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -26,21 +28,23 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   List<MyWord> myWordList = [];
 
   TextEditingController? _controller;
-  StreamController? _streamController;
-  AnimationController? _animationController;
+  // AnimationController? _animationController;
 
-  Stream? _stream;
+  late FirebaseFirestore ffs;
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   String owlBotToken = '8fedea05f34418c8334574c1ce851eb40515a819';
   String owlBotURL = 'https://owlbot.info/api/v4/dictionary/';
+
   late String _selectDropdownValue;
+
+  Future? tmpFuture;
 
   @override
   void initState() {
     _controller = new TextEditingController();
-    _streamController = new StreamController();
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    _stream = _streamController!.stream;
+    // _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    ffs = FirebaseFirestore.instance;
     _picker = ImagePicker();
     _selectDropdownValue = myDropdownTitle[0];
     super.initState();
@@ -48,14 +52,14 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
   @override
   void dispose() {
-    _animationController!.dispose();
+    // _animationController!.dispose();
     _controller!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    var _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController!);
+    // var _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController!);
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           elevation: 0.0,
@@ -64,10 +68,6 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             'assets/images/addword.png',
             fit: BoxFit.cover,
           ),
-          // Icon(
-          //   Icons.add,
-          //   color: Color.fromRGBO(223, 239, 234, 1),
-          // ),
           onPressed: () async {
             var result = await Get.to(() => DictionaryPage());
             if (myWordList.length == 0) {
@@ -87,17 +87,59 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           centerTitle: true,
           backgroundColor: Color.fromRGBO(223, 239, 234, 1),
           actions: [
-            IconButton(
-                onPressed: () {
-                  _animationController!.forward().then((value) => _animationController!.reset());
-                },
-                icon: RotationTransition(
-                  turns: _animation,
-                  child: Icon(
-                    Icons.save,
-                    color: Color.fromRGBO(88, 65, 148, 1).withOpacity(0.8),
-                  ),
-                ))
+            FutureBuilder(
+              future: tmpFuture,
+              builder: (_, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: CircularProgressIndicator(),
+                    width: 30,
+                  );
+                } else {
+                  return IconButton(
+                    onPressed: () async {
+                      // _animationController!.forward().then((value) {
+                      if (verifyingIntegrity()) {
+                        File uploadImage = File(_image!.path);
+
+                        DateFormat df = DateFormat('yyyyMMddHHmmss');
+                        CollectionReference books = ffs.collection('Books');
+                        String docId = '${_auth.currentUser!.uid}${df.format(DateTime.now())}book';
+                        DocumentReference myDoc = books.doc('docId');
+
+                        setState(() {
+                          tmpFuture = uploadFile(uploadImage);
+                        });
+
+                        tmpFuture!.then((imageURL) {
+                          if (imageURL != null) {
+                            books.doc(docId).set({
+                              'title': _controller!.text,
+                              'category': _selectDropdownValue,
+                              'imageURL': imageURL,
+                              'owner': _auth.currentUser!.email.toString(),
+                              'dttm': df.format(DateTime.now()).toString()
+                            });
+                          }
+                        });
+                      }
+                      // _animationController!.reset();
+                      //});
+                    },
+                    icon:
+                        // RotationTransition(
+                        //   turns: _animation,
+                        //   child:
+                        Icon(
+                      Icons.save,
+                      color: Color.fromRGBO(88, 65, 148, 1).withOpacity(0.8),
+                    ),
+                    // )
+                  );
+                }
+              },
+            )
           ],
           title: Text('Picture Book',
               style:
@@ -122,12 +164,12 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                         ),
                       ),
                       onTap: () {
-                        imageDialog();
+                        imageDialog(context);
                       },
                     )))
                 : GestureDetector(
                     onTap: () {
-                      imageDialog();
+                      imageDialog(context);
                     },
                     child: Container(
                         height: 250,
@@ -152,6 +194,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                       children: [
                         Expanded(
                           child: TextField(
+                            controller: _controller,
                             textAlignVertical: TextAlignVertical.center,
                             style:
                                 kMainTextPTSans.copyWith(fontSize: 18, fontWeight: FontWeight.w700),
@@ -179,9 +222,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             style: kMainTextYanolza.copyWith(color: Colors.grey, fontSize: 15),
                             onChanged: (value) {
                               setState(() {
-                                print(_selectDropdownValue);
                                 _selectDropdownValue = value as String;
-                                print(_selectDropdownValue);
                               });
                             },
                             items: myDropdownTitle.map((String value) {
@@ -263,7 +304,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     });
   }
 
-  Future<void> imageDialog() async {
+  Future<void> imageDialog(context) async {
     await showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -324,21 +365,28 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     );
   }
 
-  Future _search(String keyWord) async {
-    if (_controller?.text == null || _controller!.text.length == 0) {
-      _streamController!.add(null);
-    }
+  Future<String> uploadFile(File _imageFile) async {
+    var storageReference =
+        FirebaseStorage.instance.ref().child('books_image/${basename(_imageFile.path)}');
+    UploadTask uploadTask = storageReference.putFile(_imageFile);
 
-    Uri url = Uri.parse(owlBotURL + keyWord.trim());
+    await uploadTask;
 
-    final response = await http.get(
-      url,
-      headers: {'Authorization': 'Token ' + owlBotToken},
-    );
+    Future<String> aa = storageReference.getDownloadURL();
 
-    if (json.decode(response.body) is Map) {
-      DictionaryModel dm = DictionaryModel.fromJson(json.decode(response.body));
-      _streamController!.add(dm);
-    }
+    String ab = '';
+    await aa.then((value) {
+      ab = value;
+    });
+
+    print('ab:$ab');
+
+    return ab;
+  }
+
+  bool verifyingIntegrity() {
+    bool checker = true;
+    if (_controller!.text.trim().length == 0 || _image == null) checker = false;
+    return checker;
   }
 }

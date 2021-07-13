@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'package:englishbookworddiary/models/dictionary_model.dart';
 import 'package:englishbookworddiary/models/myword.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
@@ -17,6 +16,7 @@ class DictionaryPage extends StatefulWidget {
 
 class _DictionaryPageState extends State<DictionaryPage> {
   TextEditingController? _controller;
+  // ignore: close_sinks
   StreamController? _streamController;
   Stream? _stream;
   Timer? _debounce;
