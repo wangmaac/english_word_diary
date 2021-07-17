@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:englishbookworddiary/models/myword.dart';
 import 'package:englishbookworddiary/pages/dictionarypage.dart';
+import 'package:englishbookworddiary/pages/mybookpage.dart';
 import 'package:englishbookworddiary/pages/searchkakaobookpage.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -28,9 +30,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   List<MyWord> myWordList = [];
 
   TextEditingController? _controller;
-  // AnimationController? _animationController;
 
-  late FirebaseFirestore ffs;
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   String owlBotToken = '8fedea05f34418c8334574c1ce851eb40515a819';
@@ -41,10 +41,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   Future? tmpFuture;
 
   @override
-  void initState() {
+  initState() {
     _controller = new TextEditingController();
-    // _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    ffs = FirebaseFirestore.instance;
     _picker = ImagePicker();
     _selectDropdownValue = myDropdownTitle[0];
     super.initState();
@@ -71,7 +69,9 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           onPressed: () async {
             var result = await Get.to(() => DictionaryPage());
             if (myWordList.length == 0) {
-              myWordList = result;
+              setState(() {
+                myWordList = result;
+              });
             } else {
               result.forEach((e) {
                 myWordList = myWordList.where((myWord) => myWord != e).toList();
@@ -89,44 +89,21 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           actions: [
             FutureBuilder(
               future: tmpFuture,
-              builder: (_, snapshot) {
+              builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: CircularProgressIndicator(),
-                    width: 30,
+                    padding: const EdgeInsets.only(top: 15, bottom: 15, right: 10),
+                    child: CircularProgressIndicator(
+                      color: Colors.pink,
+                    ),
+                    width: 35,
                   );
+                } else if (snapshot.connectionState == ConnectionState.done) {
+                  return Container();
                 } else {
+                  //Get.back();
                   return IconButton(
-                    onPressed: () async {
-                      // _animationController!.forward().then((value) {
-                      if (verifyingIntegrity()) {
-                        File uploadImage = File(_image!.path);
-
-                        DateFormat df = DateFormat('yyyyMMddHHmmss');
-                        CollectionReference books = ffs.collection('Books');
-                        String docId = '${_auth.currentUser!.uid}${df.format(DateTime.now())}book';
-                        DocumentReference myDoc = books.doc('docId');
-
-                        setState(() {
-                          tmpFuture = uploadFile(uploadImage);
-                        });
-
-                        tmpFuture!.then((imageURL) {
-                          if (imageURL != null) {
-                            books.doc(docId).set({
-                              'title': _controller!.text,
-                              'category': _selectDropdownValue,
-                              'imageURL': imageURL,
-                              'owner': _auth.currentUser!.email.toString(),
-                              'dttm': df.format(DateTime.now()).toString()
-                            });
-                          }
-                        });
-                      }
-                      // _animationController!.reset();
-                      //});
-                    },
+                    onPressed: saveFireStore,
                     icon:
                         // RotationTransition(
                         //   turns: _animation,
@@ -249,6 +226,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             color: Colors.grey[300],
                             child: ListTile(
                                 onLongPress: () {
+                                  //Delete MyWord List
                                   showDialog<void>(
                                     context: context,
                                     barrierDismissible: true,
@@ -285,6 +263,14 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             padding: const EdgeInsets.all(8.0),
                             child: Text('${myWordList[index].meaning}'),
                           ),
+                          myWordList[index].example == null
+                              ? Text('')
+                              : Html(
+                                  data: "<span style='color:grey;'>ex) " +
+                                      myWordList[index].example.toString() +
+                                      "</span>",
+                                  shrinkWrap: true,
+                                ),
                         ],
                         //resultList[index].title
                       );
@@ -298,7 +284,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   }
 
   Future _getImage() async {
-    PickedFile? image = await _picker.getImage(source: ImageSource.gallery);
+    PickedFile? image = await _picker.getImage(source: ImageSource.gallery, maxWidth: 100);
+
     setState(() {
       _image = image;
     });
@@ -369,18 +356,12 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     var storageReference =
         FirebaseStorage.instance.ref().child('books_image/${basename(_imageFile.path)}');
     UploadTask uploadTask = storageReference.putFile(_imageFile);
-
     await uploadTask;
-
     Future<String> aa = storageReference.getDownloadURL();
-
     String ab = '';
     await aa.then((value) {
       ab = value;
     });
-
-    print('ab:$ab');
-
     return ab;
   }
 
@@ -388,5 +369,50 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     bool checker = true;
     if (_controller!.text.trim().length == 0 || _image == null) checker = false;
     return checker;
+  }
+
+  void saveFireStore() async {
+    if (verifyingIntegrity()) {
+      File uploadImage = File(_image!.path);
+
+      DateFormat df = DateFormat('yyyyMMddHHmmss');
+      String docId = '${_auth.currentUser!.uid}${df.format(DateTime.now())}';
+      DocumentReference mainDoc =
+          FirebaseFirestore.instance.collection('Books').doc('${docId}book');
+
+      setState(() {
+        tmpFuture = uploadFile(uploadImage);
+      });
+
+      tmpFuture!.then((imageURL) async {
+        if (imageURL != null) {
+          await mainDoc.set({
+            'title': _controller!.text,
+            'category': _selectDropdownValue,
+            'imageURL': imageURL,
+            'owner': _auth.currentUser!.email.toString(),
+            'dttm': FieldValue.serverTimestamp()
+          });
+
+          if (myWordList.length != 0) {
+            for (int i = 0; i < myWordList.length; i++) {
+              await FirebaseFirestore.instance
+                  .collection('Books')
+                  .doc('${docId}book')
+                  .collection('Words')
+                  .doc('${_auth.currentUser!.uid}$i')
+                  .set({
+                'title': myWordList[i].title,
+                'content': myWordList[i].meaning,
+                'type': myWordList[i].type,
+                'dttm': FieldValue.serverTimestamp()
+              });
+              //.set(myWordList[i].toJson());
+            }
+            Get.off(() => MyBookPage());
+          }
+        }
+      });
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:englishbookworddiary/pages/bookviewpage.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:englishbookworddiary/widgets/circleimage.dart';
@@ -145,8 +146,10 @@ class FirstPage extends StatelessWidget {
         children: List.generate(tmpList.length, (index) {
           return GestureDetector(
             onTap: () {
-              print('a');
-              Get.to(() => BookViewPage());
+              QueryDocumentSnapshot aa;
+              // Get.to(() => BookViewPage(
+              //       document: {'title': 'title', 'content': 'content'} as QueryDocumentSnapshot,
+              //     ));
             },
             child: Container(
               decoration: BoxDecoration(

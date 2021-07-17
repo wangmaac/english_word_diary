@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+// import 'package:dio/dio.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,7 @@ class TranslationBar extends StatelessWidget {
         child: TextField(
           style: kMainTextPTSans.copyWith(fontSize: 18, fontWeight: FontWeight.w700),
           onSubmitted: (value) {
-            callAPI(url, kakaoAPIKey, value);
+            // callAPI(url, kakaoAPIKey, value);
           },
           keyboardType: TextInputType.text,
           //onChanged: (text) {},
@@ -41,14 +41,14 @@ class TranslationBar extends StatelessWidget {
         ));
   }
 
-  Future callAPI(String url, String key, String value) async {
-    var dio = Dio(BaseOptions(headers: {
-      'Authorization': 'KakaoAK $key',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }));
-    final response =
-        await dio.post(url, data: {'src_lang': 'en', 'target_lang': 'kr', 'query': '$value'});
-
-    print(response.data.toString());
-  }
+  // Future callAPI(String url, String key, String value) async {
+  //   var dio = Dio(BaseOptions(headers: {
+  //     'Authorization': 'KakaoAK $key',
+  //     'Content-Type': 'application/x-www-form-urlencoded'
+  //   }));
+  //   final response =
+  //       await dio.post(url, data: {'src_lang': 'en', 'target_lang': 'kr', 'query': '$value'});
+  //
+  //   print(response.data.toString());
+  // }
 }

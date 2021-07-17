@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:englishbookworddiary/pages/bookviewpage.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:englishbookworddiary/widgets/circleimage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -9,24 +12,16 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GoogleSignIn _googleSignIn = new GoogleSignIn();
     FirebaseAuth _auth = FirebaseAuth.instance;
+    final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
-    List<Map<String, dynamic>> tmpList = [
-      {'title': 'Sing a song', 'count': 9},
-      {'title': 'Fear of stranger', 'count': 39},
-      {'title': 'Pet life', 'count': 2},
-      {'title': 'Gorilla champ', 'count': 21},
-      {'title': 'Dreaming', 'count': 12},
-      {'title': 'Sing a song', 'count': 9},
-      {'title': 'Fear of stranger', 'count': 39},
-      {'title': 'Pet life', 'count': 2},
-      {'title': 'Gorilla champ', 'count': 21},
-      {'title': 'Dreaming', 'count': 12},
-      {'title': 'Dreaming', 'count': 12},
-      {'title': 'Sing a song', 'count': 9},
-      {'title': 'Fear of stranger', 'count': 39},
-    ];
+    CollectionReference<Map<String, dynamic>> mainCollection =
+        FirebaseFirestore.instance.collection('Books');
+
+    Stream<QuerySnapshot> currentStream =
+        mainCollection.where('owner', isEqualTo: _auth.currentUser!.email.toString()).snapshots();
+
+    List<Map<String, dynamic>> tmpList = [];
 
     return Column(
       children: [
@@ -132,28 +127,53 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
         ),
-        Flexible(flex: 1, child: allMyBookWidget(context, tmpList)),
+
+        Flexible(
+          flex: 1,
+          child: StreamBuilder(
+            stream: currentStream,
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) return Center(child: Text('Error:${snapshot.error}'));
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                default:
+                  return allMyBookWidget(context, snapshot.data!.docs);
+              }
+            },
+          ),
+        ),
+        //Flexible(flex: 1, child: allMyBookWidget(context, tmpList)),
       ],
     );
   }
 
-  Widget allMyBookWidget(BuildContext context, List tmpList) {
+  Widget allMyBookWidget(BuildContext context, List<QueryDocumentSnapshot> tmpList) {
     return GridView.count(
       padding: const EdgeInsets.symmetric(horizontal: 1),
       scrollDirection: Axis.vertical, //스크롤 방향 조절
       crossAxisCount: 4,
       childAspectRatio: 1 / 1,
       children: List.generate(tmpList.length, (index) {
-        return Container(
-          margin: const EdgeInsets.all(1),
-          decoration: BoxDecoration(
-              border: Border.all(width: 1, color: Colors.grey),
-              borderRadius: BorderRadius.circular(8)),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              'http://files.picturebookmakers.com/images/posts/20150607-benji-davies/x2/7.jpg',
-              fit: BoxFit.cover,
+        return GestureDetector(
+          onTap: () {
+            Get.to(() => BookViewPage(
+                  document: tmpList[index],
+                ));
+          },
+          child: Container(
+            margin: const EdgeInsets.all(1),
+            decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Colors.grey),
+                borderRadius: BorderRadius.circular(8)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                tmpList[index]['imageURL'],
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         );

@@ -4,6 +4,8 @@ import 'package:englishbookworddiary/models/dictionary_model.dart';
 import 'package:englishbookworddiary/models/myword.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -71,6 +73,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                       decoration: BoxDecoration(
                           color: Colors.white, borderRadius: BorderRadius.circular(24.0)),
                       child: TextFormField(
+                        inputFormatters: [WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9]"))],
                         onFieldSubmitted: (value) {
                           _search(_controller!.text);
                         },
@@ -147,6 +150,14 @@ class _DictionaryPageState extends State<DictionaryPage> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(snapshot.data.definitions[index].definition),
                           ),
+                          snapshot.data.definitions[index].example == null
+                              ? Text('')
+                              : Html(
+                                  data: "<span style='color:grey;'>ex) " +
+                                      snapshot.data.definitions[index].example +
+                                      "</span>",
+                                  shrinkWrap: true,
+                                ),
                         ],
                       );
                     });
@@ -183,7 +194,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
   }
 
   void rebuildWordList(String title, Definitions content) {
-    MyWord mw = new MyWord(title, content.type, content.definition);
+    MyWord mw = new MyWord(title, content.type, content.definition, content.example);
 
     if (resultList.length == 0) {
       resultList.add(mw);

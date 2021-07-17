@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:englishbookworddiary/pages/firstpage.dart';
 import 'package:englishbookworddiary/pages/mybookpage.dart';
 import 'package:englishbookworddiary/pages/profilepage.dart';
@@ -19,9 +20,17 @@ class _MainPageState extends State<MainPage> {
   late FirebaseAuth _auth;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     _auth = FirebaseAuth.instance;
 
+    //print(_auth.currentUser!.photoURL);
+    //WidgetsFlutterBinding.ensureInitialized();
+    saveUserFireStore();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     List<Widget> pages = [
       FirstPage(),
       SearchPage(),
@@ -101,5 +110,17 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
         ));
+  }
+
+  void saveUserFireStore() async {
+    try {
+      DocumentReference mainDoc =
+          await FirebaseFirestore.instance.collection('Users').doc('${_auth.currentUser!.uid}user');
+
+      await mainDoc
+          .set({'account': _auth.currentUser!.email, 'accountURL': _auth.currentUser!.photoURL});
+    } catch (error) {
+      throw Exception(error.toString());
+    }
   }
 }
