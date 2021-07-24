@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:englishbookworddiary/models/myword.dart';
 import 'package:englishbookworddiary/pages/bookviewpage.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:englishbookworddiary/widgets/circleimage.dart';
@@ -21,14 +22,11 @@ class ProfilePage extends StatelessWidget {
     Stream<QuerySnapshot> currentStream =
         mainCollection.where('owner', isEqualTo: _auth.currentUser!.email.toString()).snapshots();
 
-    List<Map<String, dynamic>> tmpList = [];
-
     return Column(
       children: [
         Flexible(
           flex: 1,
           child: Container(
-            //color: Color.fromRGBO(228, 240, 250, 1),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -41,12 +39,8 @@ class ProfilePage extends StatelessWidget {
                           color: Colors.black, fontWeight: FontWeight.w700),
                     ),
                     onPressed: () async {
-                      // await _googleSignIn.signOut();
-                      // await _auth.signOut().whenComplete(() => Get.off(() => FutureSplash()));
                       await _googleSignIn.signOut();
                       await _auth.signOut();
-                      //await _googleSignIn.signOut().then((value) => exit(0));
-                      //await _googleSignIn.signOut().then((value) => SystemNavigator.pop());
                     },
                   ),
                   alignment: Alignment.centerRight,
@@ -127,7 +121,6 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
         ),
-
         Flexible(
           flex: 1,
           child: StreamBuilder(
@@ -159,20 +152,36 @@ class ProfilePage extends StatelessWidget {
       children: List.generate(tmpList.length, (index) {
         return GestureDetector(
           onTap: () {
-            Get.to(() => BookViewPage(
+            List<MyWord> wordList = [];
+            Stream<QuerySnapshot> tt = tmpList[index].reference.collection('Words').snapshots();
+            tt.listen((event) {
+              for (var doc in event.docs) {
+                MyWord a = MyWord.fromJson(doc.data() as Map<String, dynamic>);
+                wordList.add(a);
+              }
+              Get.to(
+                () => BookViewPage(
                   document: tmpList[index],
-                ));
+                  tag: index,
+                  wordList: wordList,
+                  liked: true,
+                ),
+              );
+            });
           },
-          child: Container(
-            margin: const EdgeInsets.all(1),
-            decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.grey),
-                borderRadius: BorderRadius.circular(8)),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                tmpList[index]['imageURL'],
-                fit: BoxFit.cover,
+          child: Hero(
+            tag: 'tag$index',
+            child: Container(
+              margin: const EdgeInsets.all(1),
+              decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  tmpList[index]['imageURL'],
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

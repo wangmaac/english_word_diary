@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:englishbookworddiary/models/myword.dart';
 import 'package:englishbookworddiary/pages/dictionarypage.dart';
-import 'package:englishbookworddiary/pages/mybookpage.dart';
 import 'package:englishbookworddiary/pages/searchkakaobookpage.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -118,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
               },
             )
           ],
-          title: Text('Picture Book',
+          title: Text('책을 등록해요',
               style:
                   kMainTextYanolza.copyWith(fontSize: 20, color: Color.fromRGBO(88, 65, 148, 1))),
         ),
@@ -391,6 +390,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             'category': _selectDropdownValue,
             'imageURL': imageURL,
             'owner': _auth.currentUser!.email.toString(),
+            'uid': _auth.currentUser!.uid,
             'dttm': FieldValue.serverTimestamp()
           });
 
@@ -405,13 +405,18 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                 'title': myWordList[i].title,
                 'content': myWordList[i].meaning,
                 'type': myWordList[i].type,
+                'example': myWordList[i].example,
                 'dttm': FieldValue.serverTimestamp()
               });
               //.set(myWordList[i].toJson());
             }
-            Get.off(() => MyBookPage());
+            //Get.back();  //너무 오래 딜레이가 되어서. 시려
           }
         }
+      });
+      //그냥은 너무 빠르고, 2초
+      Future.delayed(Duration(milliseconds: 1500), () {
+        Get.back();
       });
     }
   }

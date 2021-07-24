@@ -3,6 +3,7 @@ import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class MyBookCard extends StatelessWidget {
   final DocumentSnapshot document;
@@ -76,7 +77,6 @@ class MyBookCard extends StatelessWidget {
                                       SizedBox(
                                         width: 5,
                                       ),
-                                      //TODO 뷰값이 1백만 넘어가면 왕관으로.
                                       Text(
                                         '100',
                                         style: kMainTextYanolza.copyWith(
@@ -129,9 +129,13 @@ class MyBookCard extends StatelessWidget {
                                       style: kMainTextPTSans.copyWith(fontWeight: FontWeight.w700),
                                     ),
                                     visualDensity: VisualDensity.standard,
-                                    //trailing: Text('trailing'),
                                     leading: Text('${snapshot.data!.docs[index]['type']}'),
-                                    subtitle: Text('${snapshot.data!.docs[index]['content']}'),
+                                    subtitle: Html(
+                                      data: snapshot.data!.docs[index]['example'] != null
+                                          ? "${snapshot.data!.docs[index]['content']} <br><br><span style='color:indigo;'>ex)${snapshot.data!.docs[index]['example']}</span>"
+                                          : "${snapshot.data!.docs[index]['content']}",
+                                      shrinkWrap: true,
+                                    ),
                                     tileColor: Colors.grey[300],
                                   ),
                                 );
@@ -168,7 +172,7 @@ class MyBookCard extends StatelessWidget {
                     ),
                     height: 60,
                     width: 40,
-                    color: Colors.orange[400],
+                    //color: Colors.orange[400],
                   ),
                   alignment: Alignment.topRight,
                 ),

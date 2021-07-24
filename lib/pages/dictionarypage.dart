@@ -116,7 +116,6 @@ class _DictionaryPageState extends State<DictionaryPage> {
                     return Center(child: Text('Enter a search word'));
                   }
                 }
-
                 if (snapshot.data == 'waiting') {
                   return CircularProgressIndicator();
                 }
@@ -194,7 +193,8 @@ class _DictionaryPageState extends State<DictionaryPage> {
   }
 
   void rebuildWordList(String title, Definitions content) {
-    MyWord mw = new MyWord(title, content.type, content.definition, content.example);
+    MyWord mw = new MyWord(
+        title: title, type: content.type, meaning: content.definition, example: content.example);
 
     if (resultList.length == 0) {
       resultList.add(mw);

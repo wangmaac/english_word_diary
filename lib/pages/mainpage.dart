@@ -22,8 +22,6 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     _auth = FirebaseAuth.instance;
-
-    //print(_auth.currentUser!.photoURL);
     //WidgetsFlutterBinding.ensureInitialized();
     saveUserFireStore();
     super.initState();
@@ -117,8 +115,12 @@ class _MainPageState extends State<MainPage> {
       DocumentReference mainDoc =
           await FirebaseFirestore.instance.collection('Users').doc('${_auth.currentUser!.uid}user');
 
-      await mainDoc
-          .set({'account': _auth.currentUser!.email, 'accountURL': _auth.currentUser!.photoURL});
+      await mainDoc.set({
+        'account': _auth.currentUser!.email,
+        'accountURL': _auth.currentUser!.photoURL,
+        'uid': _auth.currentUser!.uid,
+        'displayName': _auth.currentUser!.displayName
+      });
     } catch (error) {
       throw Exception(error.toString());
     }

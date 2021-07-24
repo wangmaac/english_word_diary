@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -6,6 +9,7 @@ class SearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController _controller = new TextEditingController();
     return Container(
         decoration:
             BoxDecoration(borderRadius: BorderRadius.circular(15), color: Colors.grey.shade200),
@@ -13,10 +17,10 @@ class SearchBar extends StatelessWidget {
         alignment: Alignment.centerLeft,
         height: 50,
         child: TextField(
+          controller: _controller,
           style: kMainTextPTSans.copyWith(fontSize: 18, fontWeight: FontWeight.w700),
           onSubmitted: (value) {},
           keyboardType: TextInputType.text,
-          //onChanged: (text) {},
           decoration: InputDecoration(
               hintText: 'Search Book...',
               hintStyle: kMainTextPTSans.copyWith(

@@ -6,7 +6,15 @@ class MyWord {
   String? meaning;
   String? example;
 
-  MyWord(this.title, this.type, this.meaning, this.example);
+  MyWord({required this.title, this.type, this.meaning, this.example});
+
+  factory MyWord.fromJson(Map<String, dynamic> json) {
+    return MyWord(
+        title: json['title'],
+        type: json['type'],
+        meaning: json['content'],
+        example: json['example']);
+  }
 
   @override
   bool operator ==(Object other) {

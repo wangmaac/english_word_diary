@@ -2,6 +2,7 @@ import 'package:englishbookworddiary/controller/controller.dart';
 import 'package:englishbookworddiary/pages/loginchecker.dart';
 import 'package:englishbookworddiary/utilities/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom, SystemUiOverlay.top]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(GetMaterialApp(
     initialBinding: BindingsBuilder(() {
